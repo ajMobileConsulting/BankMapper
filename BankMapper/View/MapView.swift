@@ -35,6 +35,7 @@ struct MapView: View {
                                     longitude: landmark.coordinate.longitude
                                    )
                                }
+
                            Text(landmark.name)
                                .font(.caption)
                                .padding(4)
@@ -48,7 +49,6 @@ struct MapView: View {
                    // Additional setup if needed
                    viewModel.fetchNearbyBanks()
                }
-
                .fullScreenCover(isPresented: $showListView, content: {
                    ListView() {
                        showListView = false

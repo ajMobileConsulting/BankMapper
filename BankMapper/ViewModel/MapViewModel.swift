@@ -79,3 +79,4 @@ class MapViewModel: ObservableObject {
     }
     
 }
+
