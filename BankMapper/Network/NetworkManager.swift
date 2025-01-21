@@ -25,7 +25,12 @@ struct NetworkManager: NetworkAction {
             completion(.failure(NetworkError.urlError))
             return
         }
-        urlSession.dataTask(with: url) { data, response, error in
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("RLJIDSen54nPe5q8eEhuNvZPrLeD57YO", forHTTPHeaderField: "apiKey")
+        
+        urlSession.dataTask(with: request) { data, response, error in
             guard let data = data, error == nil else {
                 completion(.failure(NetworkError.dataNotFound))
                 return

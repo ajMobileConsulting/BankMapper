@@ -9,16 +9,16 @@ import SwiftUI
 import CoreData
 
 struct SavedLocationsView: View {
-    @Environment(\.managedObjectContext) private var viewContext
-    @FetchRequest(
-        entity: Location.entity(), // Use the Core Data entity
-        sortDescriptors: [NSSortDescriptor(keyPath: \Location.name, ascending: true)]
-    ) private var locations: FetchedResults<Location>
+    @StateObject private var viewModel: SavedLocationsViewModel
+    
+    init(context: NSManagedObjectContext) {
+        _viewModel = StateObject(wrappedValue: SavedLocationsViewModel(context: context))
+    }
 
     var body: some View {
         NavigationView {
             List {
-                ForEach(locations, id: \.self) { location in
+                ForEach(viewModel.locations, id: \.self) { location in
                     VStack(alignment: .leading) {
                         Text(location.name ?? "Unknown Location")
                             .font(.headline)
@@ -26,7 +26,9 @@ struct SavedLocationsView: View {
                             .font(.subheadline)
                     }
                 }
-                .onDelete(perform: deleteLocations)
+                .onDelete { offsets in
+                    viewModel.deleteLocation(at: offsets)
+                }
             }
             .navigationTitle("Saved Locations")
             .toolbar {
@@ -36,23 +38,10 @@ struct SavedLocationsView: View {
             }
         }
     }
-
-    // Delete a location
-    private func deleteLocations(offsets: IndexSet) {
-        withAnimation {
-            offsets.map { locations[$0] }.forEach(viewContext.delete)
-
-            do {
-                try viewContext.save()
-            } catch {
-                print("Error deleting locations: \(error.localizedDescription)")
-            }
-        }
-    }
 }
 
 
 #Preview {
-    SavedLocationsView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    SavedLocationsView(context: PersistenceController.preview.container.viewContext)
 }
 
