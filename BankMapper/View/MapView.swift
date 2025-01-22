@@ -13,7 +13,7 @@ struct MapView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @StateObject private var viewModel: MapViewModel
     
-    @State private var showListView = false
+    @State private var showLoginView = false
     
     init() {
         _viewModel = StateObject(wrappedValue: MapViewModel(viewContext: PersistenceController.shared.container.viewContext))
@@ -28,7 +28,7 @@ struct MapView: View {
                                .foregroundColor(.blue)
                                .font(.title)
                                .onTapGesture {
-                                   showListView = true
+                                   showLoginView = true
                                    viewModel.saveLocation(
                                     name: landmark.name,
                                     latitude: landmark.coordinate.latitude,
@@ -49,9 +49,9 @@ struct MapView: View {
                    // Additional setup if needed
                    viewModel.fetchNearbyBanks()
                }
-               .fullScreenCover(isPresented: $showListView, content: {
-                   ListView() {
-                       showListView = false
+               .fullScreenCover(isPresented: $showLoginView, content: {
+                   LoginView() {
+                       showLoginView = false
                    }
                })
     }

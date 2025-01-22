@@ -6,5 +6,5 @@
 //
 
 struct Endpoints {
-    static let baseUrl = "https://api.github.com/users"
+    static let baseUrl = "https://api.apilayer.com/bank_data/all?per_page=20&page=1&country=us"
 }

@@ -11,7 +11,8 @@ struct BankModel: Decodable {
     let data: [BankDataModel]
 }
 
-struct BankDataModel: Decodable {
+struct BankDataModel: Decodable, Identifiable {
+    var id = UUID()
     let usRouting: String
     let revisionDate: String
     let newRouting: BoolOrString
@@ -25,7 +26,8 @@ struct BankDataModel: Decodable {
     }
 }
 
-struct BankData: Decodable {
+struct BankData: Decodable{ //}, Identifiable {
+//    var id: UUID { UUID() }
     let name: String
     let zip: String
     let city: String

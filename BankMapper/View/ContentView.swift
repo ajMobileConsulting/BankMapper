@@ -25,25 +25,10 @@ struct ContentView: View {
                     .tabItem({
                         Label("Saved Locations", systemImage: "square.and.arrow.down")
                     })
-            }
-            .onAppear {
-                let url = "https://api.apilayer.com/bank_data/all?per_page=20&page=1&country=us"
-                
-                network.get(apiURL: url, completion: { result in
-                    switch result {
-                    case .success(let data):
-                        print(data)
-                        do {
-                            let banks = try JSONDecoder().decode(BankModel.self, from: data)
-                            print(banks)
-                        } catch {
-                            print(error)
-                        }
-                        
-                    case .failure(let error):
-                        print(error)
-                    }
-                })
+                BankLocationsListView()
+                    .tabItem({
+                        Label("Miscellaneous Banks", systemImage: "dollarsign.bank.building.fill")
+                    })
             }
         }
         
