@@ -8,20 +8,24 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
+         stage('Checkout') {
             steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: '*/${BRANCH_NAME}']],  // Ensure it checks out PR branches
-                    userRemoteConfigs: [[
-                        url: 'https://github.com/ajMobileConsulting/BankMapper.git',
-                        credentialsId: 'GitHub-token'
-                    ]]
-                ])
+                script {
+                    def branch = env.BRANCH_NAME ?: 'main'
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: "*/${branch}"]],
+                        userRemoteConfigs: [[
+                            url: 'https://github.com/ajMobileConsulting/BankMapper.git',
+                            credentialsId: 'GitHub-token'
+                        ]],
+                        extensions: [[$class: 'PruneStaleBranch']]
+                    ])
+                }
             }
         }
 
-        stage('Install Dependencies') {
+     stage('Install Dependencies') {
             steps {
                 sh 'gem install --user-install bundler danger faraday-retry'
             }
@@ -29,14 +33,8 @@ pipeline {
 
         stage('Run Danger Checks') {
             steps {
-                script {
-                    def pr_number = sh(script: "git branch --contains HEAD | grep -o '[0-9]*' || echo ''", returnStdout: true).trim()
-                    if (pr_number) {
-                        sh "danger --dangerfile=Dangerfile pr https://github.com/ajMobileConsulting/BankMapper/pull/${pr_number}"
-                    } else {
-                        error "No pull request found for this branch"
-                    }
-                }
+                sh 'git fetch origin "+refs/pull/*:refs/remotes/origin/pr/*"'
+                sh 'danger --dangerfile=Dangerfile pr https://github.com/ajMobileConsulting/BankMapper/pull/${CHANGE_ID}'
             }
         }
     }
