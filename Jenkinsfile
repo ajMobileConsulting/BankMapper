@@ -15,7 +15,7 @@ pipeline {
                         branches: [[name: '*/main']],
                         userRemoteConfigs: [[
                             url: 'https://github.com/ajMobileConsulting/BankMapper.git',
-                            credentialsId: 'github-token'
+                            credentialsId: 'GitHub-token'
                         ]]
                     ])
                 }
