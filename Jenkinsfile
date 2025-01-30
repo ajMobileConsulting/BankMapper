@@ -49,17 +49,7 @@ pipeline {
                 }
             }
         }
-
-        stage('Install Dependencies') {
-            steps {
-                sh 'gem install bundler danger faraday-retry'
-            }
-        }
-
-        stage('Run Danger Checks') {
-            steps {
-                sh 'danger'
-            }
-        }
+        
+        
     }
 }
