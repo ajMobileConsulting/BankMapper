@@ -33,8 +33,8 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'gem install --user-install bundler danger faraday-retry'
                 sh 'export PATH=$HOME/.gem/ruby/3.1.0/bin:$PATH'
+                sh 'gem install --user-install bundler danger faraday-retry'
             }
         }
 
