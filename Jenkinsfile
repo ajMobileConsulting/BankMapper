@@ -46,7 +46,7 @@ pipeline {
             if (!prNumber) {
                 // Extract PR number from branch name if CHANGE_ID is not set
                 def branchName = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
-                def match = branchName =~ /PR-(\d+)-merge/
+                def match = branchName =~ /PR-(\d+)-head/
                 if (match) {
                     prNumber = match[0][1]
                     echo "Extracted PR number: ${prNumber}"
@@ -54,7 +54,9 @@ pipeline {
             }
 
             if (prNumber) {
-                sh "danger --dangerfile=Dangerfile pr https://github.com/ajMobileConsulting/BankMapper/pull/${prNumber}"
+                withCredentials([string(credentialsId: 'GitHub-token', variable: 'DANGER_GITHUB_API_TOKEN')]) {
+                    sh "export DANGER_GITHUB_API_TOKEN=${DANGER_GITHUB_API_TOKEN} && danger --dangerfile=Dangerfile pr https://github.com/ajMobileConsulting/BankMapper/pull/${prNumber}"
+                }
             } else {
                 echo "Skipping Danger since no PR number could be detected."
             }
