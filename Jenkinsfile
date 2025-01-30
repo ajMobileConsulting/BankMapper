@@ -8,10 +8,11 @@ pipeline {
     }
 
     stages {
-         stage('Checkout') {
+        stage('Checkout') {
             steps {
                 script {
-                    def branch = env.BRANCH_NAME ?: 'main'
+                    def branch = env.CHANGE_BRANCH ?: env.BRANCH_NAME ?: 'main'  // Support PRs and regular builds
+                    
                     checkout([
                         $class: 'GitSCM',
                         branches: [[name: "*/${branch}"]],
@@ -25,7 +26,7 @@ pipeline {
             }
         }
 
-     stage('Install Dependencies') {
+        stage('Install Dependencies') {
             steps {
                 sh 'gem install --user-install bundler danger faraday-retry'
             }
@@ -33,8 +34,14 @@ pipeline {
 
         stage('Run Danger Checks') {
             steps {
-                sh 'git fetch origin "+refs/pull/*:refs/remotes/origin/pr/*"'
-                sh 'danger --dangerfile=Dangerfile pr https://github.com/ajMobileConsulting/BankMapper/pull/${CHANGE_ID}'
+                script {
+                    if (env.CHANGE_ID) {  // Ensure this is a PR build
+                        sh 'git fetch origin "+refs/pull/*:refs/remotes/origin/pr/*"'
+                        sh "danger --dangerfile=Dangerfile pr https://github.com/ajMobileConsulting/BankMapper/pull/${CHANGE_ID}"
+                    } else {
+                        echo "Skipping Danger since this is not a pull request."
+                    }
+                }
             }
         }
     }
