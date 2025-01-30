@@ -26,8 +26,7 @@ struct BankDataModel: Decodable, Identifiable {
     }
 }
 
-struct BankData: Decodable{ //}, Identifiable {
-//    var id: UUID { UUID() }
+struct BankData: Decodable{ 
     let name: String
     let zip: String
     let city: String

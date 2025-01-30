@@ -6,30 +6,40 @@
 //
 
 import XCTest
+@testable import BankMapper
 
 final class AuthenticationServiceTests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    
+    var sut: AuthenticationService!
+    var username: String!
+    var password: String!
+    
+    override func setUp() {
+        sut = AuthenticationService.shared
+        username = "test.user"
+        password = "abc.123"
     }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    
+    override func tearDown() {
+        _ = sut.deleteCredentials(username: username)
+        sut = nil
+        username = nil
+        password = nil
     }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
+    
+    func testAddCredentials() {
+        XCTAssertTrue(sut.addCredentials(username: username, password: password))
+        XCTAssertEqual(sut.getCredentials(username: username), password)
     }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
+    
+    func testSaveCredentials()  {
+        XCTAssertTrue(sut.saveCredentials(username: username, password: password))
     }
-
+    
+    func testUpdateCredentials() {
+        let newPassword = "new.456"
+        _ = sut.addCredentials(username: username, password: password)
+        XCTAssertTrue(sut.updateCredentials(username: username, password: newPassword))
+        XCTAssertEqual(sut.getCredentials(username: username), newPassword)
+    }
 }

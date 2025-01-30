@@ -36,26 +36,42 @@ struct LoginView: View {
                         .padding(.horizontal)
                 }
                 
-                // Login Button
-                Button(action: {
+                Button("Login") {
                     viewModel.login()
-                }) {
-                    Text("Login")
-                        .bold()
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
-                        .padding(.horizontal)
                 }
-                .padding(.top, 10)
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(8)
+                .padding(.horizontal)
+                
+                Button("Register") {
+                    viewModel.registerNewUser()
+                }
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(Color.green)
+                .foregroundColor(.white)
+                .cornerRadius(8)
+                .padding(.horizontal)
+                
+                Button("Logout") {
+                    viewModel.logout()
+                }
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(Color.red)
+                .foregroundColor(.white)
+                .cornerRadius(8)
+                .padding(.horizontal)
                 
                 Spacer()
             }
         })
     }
 }
+
 #Preview {
     LoginView() {
         print("dismiss")

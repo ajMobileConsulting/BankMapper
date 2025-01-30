@@ -34,36 +34,6 @@
             endingLineNumber = "22"
             landmarkName = "fetchBanks()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "632DC9FC-E63F-4E47-BF31-5723EC3D09B6 - d4f554f6a432f15b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Result&lt;Foundation.Data, BankMapper.NetworkError&gt;) -&gt; () in BankMapper.BankLocationsViewModel.fetchBanks() -&gt; ()"
-                  moduleName = "BankMapper.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/leaveittolou/Documents/Work/App%20Development/BankMapper/BankMapper/ViewModel/BankLocationsViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "22"
-                  endingLineNumber = "22">
-               </Location>
-               <Location
-                  uuid = "632DC9FC-E63F-4E47-BF31-5723EC3D09B6 - d4f554f6a432f15b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Result&lt;Foundation.Data, BankMapper.NetworkError&gt;) -&gt; () in BankMapper.BankLocationsViewModel.fetchBanks() -&gt; ()"
-                  moduleName = "BankMapper.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/leaveittolou/Documents/Work/App%20Development/BankMapper/BankMapper/ViewModel/BankLocationsViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "22"
-                  endingLineNumber = "22">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

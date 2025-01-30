@@ -9,27 +9,27 @@ pipeline {
 
     stages {
         stage('Checkout') {
-            steps {
-                script {
-                    def branch = env.CHANGE_BRANCH ?: env.BRANCH_NAME ?: 'main'
+    steps {
+        script {
+            def branch = env.CHANGE_BRANCH ?: env.BRANCH_NAME ?: 'main'
 
-                    checkout([
-                        $class: 'GitSCM',
-                        branches: [[name: "*/${branch}"]],
-                        userRemoteConfigs: [[
-                            url: 'https://github.com/ajMobileConsulting/BankMapper.git',
-                            credentialsId: 'GitHub-token'
-                        ]],
-                        extensions: [[$class: 'PruneStaleBranch']]
-                    ])
+            checkout([
+                $class: 'GitSCM',
+                branches: [[name: "*/${branch}"]],
+                userRemoteConfigs: [[
+                    url: 'https://github.com/ajMobileConsulting/BankMapper.git',
+                    credentialsId: 'GitHub-token'
+                ]],
+                extensions: [[$class: 'PruneStaleBranch']]
+            ])
 
-                    if (env.CHANGE_ID) { // If this is a PR build
-                        sh 'git fetch origin "+refs/pull/*:refs/remotes/origin/pr/*"'
-                        sh 'git checkout FETCH_HEAD'
-                    }
-                }
+            if (env.CHANGE_ID) { // Ensure PR branch is fetched correctly
+                sh 'git fetch origin "+refs/pull/${CHANGE_ID}/head:pr-${CHANGE_ID}"'
+                sh 'git checkout pr-${CHANGE_ID}'
             }
         }
+    }
+}
 
         stage('Install Dependencies') {
             steps {
@@ -38,16 +38,33 @@ pipeline {
             }
         }
 
-        stage('Run Danger Checks') {
-            steps {
-                script {
-                    if (env.CHANGE_ID) { // Only run Danger if this is a PR
-                        sh "danger --dangerfile=Dangerfile pr https://github.com/ajMobileConsulting/BankMapper/pull/${CHANGE_ID}"
-                    } else {
-                        echo "Skipping Danger since this is not a pull request."
+stage('Run Danger Checks') {
+    steps {
+        script {
+            def prNumber = env.CHANGE_ID ?: sh(script: "git rev-parse --abbrev-ref HEAD | grep -oP '(?<=PR-)[0-9]+'", returnStdout: true).trim()
+
+            if (prNumber) {
+                withCredentials([string(credentialsId: 'GitHub-Secret-Text', variable: 'DANGER_GITHUB_API_TOKEN')]) {
+                    withEnv(["DANGER_GITHUB_API_TOKEN=${env.DANGER_GITHUB_API_TOKEN}"]) {
+                        sh "danger --dangerfile=Dangerfile pr https://github.com/ajMobileConsulting/BankMapper/pull/${prNumber}"
                     }
                 }
+            } else {
+                echo "Skipping Danger since no PR number could be detected."
             }
         }
+    }
+}
+        stage('Debug PR Detection') {
+    steps {
+        script {
+            echo "CHANGE_ID: ${env.CHANGE_ID ?: 'Not Set'}"
+            echo "CHANGE_TARGET: ${env.CHANGE_TARGET ?: 'Not Set'}"
+            echo "BRANCH_NAME: ${env.BRANCH_NAME ?: 'Not Set'}"
+            echo "GIT_BRANCH: ${env.GIT_BRANCH ?: 'Not Set'}"
+        }
+    }
+}
+
     }
 }
