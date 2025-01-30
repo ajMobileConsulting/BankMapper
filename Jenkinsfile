@@ -50,6 +50,15 @@ pipeline {
             }
         }
         
-        
+        stage('Debug PR Detection') {
+    steps {
+        script {
+            echo "CHANGE_ID: ${env.CHANGE_ID}"
+            echo "CHANGE_TARGET: ${env.CHANGE_TARGET}"
+            echo "BRANCH_NAME: ${env.BRANCH_NAME}"
+            echo "GIT_BRANCH: ${env.GIT_BRANCH}"
+        }
+    }
+}
     }
 }
