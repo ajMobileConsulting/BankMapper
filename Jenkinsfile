@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        GEM_HOME = "${HOME}/.gem/ruby/3.1.0"
-        PATH = "${GEM_HOME}/bin:${PATH}"
+        GEM_HOME = "/var/jenkins_home/.gem/ruby/3.1.0"
+        PATH = "${GEM_HOME}/bin:/usr/bin:${PATH}"
         DANGER_GITHUB_API_TOKEN = credentials('GitHub-token') // Ensure GitHub API token is used
     }
 
@@ -25,7 +25,7 @@ pipeline {
 
                     if (env.CHANGE_ID) { // If this is a PR build
                         sh 'git fetch origin "+refs/pull/*:refs/remotes/origin/pr/*"'
-                        sh 'git checkout origin/pr/${CHANGE_ID}/merge || git checkout origin/pr/${CHANGE_ID}/head'
+                        sh 'git checkout FETCH_HEAD'
                     }
                 }
             }
