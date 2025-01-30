@@ -31,7 +31,7 @@ pipeline {
 
         stage('Run Danger Checks') {
             steps {
-                sh 'danger'
+                sh 'danger --dangerfile=Dangerfile pr'  // Ensure it runs on PRs
             }
         }
     }
