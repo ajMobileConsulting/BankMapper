@@ -1,29 +1,37 @@
 pipeline {
     agent any
 
+    environment {
+        GEM_HOME = "${HOME}/.gem/ruby/3.1.0"
+        PATH = "${GEM_HOME}/bin:${PATH}"
+    }
+
     stages {
         stage('Checkout') {
             steps {
                 script {
-                    // Checkout the correct branch for PRs or normal commits
-                    checkout scm
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: '*/main']],
+                        userRemoteConfigs: [[
+                            url: 'https://github.com/ajMobileConsulting/BankMapper.git',
+                            credentialsId: 'github-token'
+                        ]]
+                    ])
                 }
             }
         }
 
-
         stage('Install Dependencies') {
             steps {
-                sh 'gem install bundler danger faraday-retry'
+                sh 'gem install --user-install bundler danger faraday-retry'
+                sh 'export PATH="$HOME/.gem/ruby/3.1.0/bin:$PATH"'
             }
         }
 
         stage('Run Danger Checks') {
-            when {
-                expression { return env.CHANGE_ID != null } // Runs only on PRs
-            }
             steps {
-                sh 'bundle exec danger'
+                sh 'danger'
             }
         }
     }
