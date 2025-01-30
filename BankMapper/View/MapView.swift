@@ -28,12 +28,14 @@ struct MapView: View {
                                .foregroundColor(.blue)
                                .font(.title)
                                .onTapGesture {
-                                   showLoginView = true
-                                   viewModel.saveLocation(
-                                    name: landmark.name,
-                                    latitude: landmark.coordinate.latitude,
-                                    longitude: landmark.coordinate.longitude
-                                   )
+                                   DispatchQueue.main.async {
+                                       showLoginView = true
+                                       viewModel.saveLocation(
+                                        name: landmark.name,
+                                        latitude: landmark.coordinate.latitude,
+                                        longitude: landmark.coordinate.longitude
+                                       )
+                                   }
                                }
 
                            Text(landmark.name)
@@ -47,32 +49,17 @@ struct MapView: View {
                .ignoresSafeArea(edges: .top)
                .onAppear {
                    // Additional setup if needed
-                   viewModel.fetchNearbyBanks()
+                   DispatchQueue.main.async {
+                       viewModel.fetchNearbyBanks()
+                   }
                }
                .fullScreenCover(isPresented: $showLoginView, content: {
                    LoginView() {
-                       showLoginView = false
+                       DispatchQueue.main.async {
+                           showLoginView = false
+                       }
                    }
                })
-    }
-}
-
-
-struct ListView: View {
-    let dismissAction: () -> ()
-    
-    var body: some View {
-        NavigationView {
-            Color.cyan
-                .ignoresSafeArea(edges: .all)
-                .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button("Back") {
-                            dismissAction()
-                        }
-                    }
-                }
-        }
     }
 }
 

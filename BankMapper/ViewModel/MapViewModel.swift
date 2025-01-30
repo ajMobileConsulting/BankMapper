@@ -56,7 +56,6 @@ class MapViewModel: ObservableObject {
     
     // Function to save a location to Core Data
     func saveLocation(name: String, latitude: Double, longitude: Double) {
-        
         let fetchRequest: NSFetchRequest<Location> = Location.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "latitude == %lf AND longitude == %lf", latitude, longitude)
         
@@ -64,18 +63,25 @@ class MapViewModel: ObservableObject {
             let existingLocations = try viewContext.fetch(fetchRequest)
             
             if existingLocations.isEmpty {
-                let newLocation = Location(context: viewContext) // Assuming `Location` is the Core Data entity
+                let newLocation = Location(context: viewContext)
                 newLocation.name = name
                 newLocation.latitude = latitude
                 newLocation.longitude = longitude
                 
-                try viewContext.save()
-                print("Saved location: \(name) at (\(latitude), \(longitude))")
+                // Defer saving the context to avoid publishing changes immediately
+                DispatchQueue.main.async {
+                    do {
+                        try self.viewContext.save()
+                        print("Saved location: \(name) at (\(latitude), \(longitude))")
+                    } catch {
+                        print("Failed to save location: \(error.localizedDescription)")
+                    }
+                }
             } else {
                 print("Duplicate location: \(name) at (\(latitude), \(longitude))")
             }
         } catch {
-            print("Failed to save location: \(error.localizedDescription)")
+            print("Failed to fetch locations: \(error.localizedDescription)")
         }
     }
     
