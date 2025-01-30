@@ -54,7 +54,7 @@ pipeline {
             }
 
             if (prNumber) {
-                withCredentials([string(credentialsId: 'GitHub-token', variable: 'DANGER_GITHUB_API_TOKEN')]) {
+                withCredentials([string(credentialsId: 'GitHub-Secret-Text', variable: 'DANGER_GITHUB_API_TOKEN')]) {
                     sh "export DANGER_GITHUB_API_TOKEN=${DANGER_GITHUB_API_TOKEN} && danger --dangerfile=Dangerfile pr https://github.com/ajMobileConsulting/BankMapper/pull/${prNumber}"
                 }
             } else {
