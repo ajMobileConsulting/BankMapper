@@ -11,8 +11,8 @@ pipeline {
         stage('Checkout') {
             steps {
                 script {
-                    def branch = env.CHANGE_BRANCH ?: env.BRANCH_NAME ?: 'main'  // Support PRs and regular builds
-                    
+                    def branch = env.CHANGE_BRANCH ?: env.BRANCH_NAME ?: 'main' // Detect PR or branch
+
                     checkout([
                         $class: 'GitSCM',
                         branches: [[name: "*/${branch}"]],
@@ -22,6 +22,11 @@ pipeline {
                         ]],
                         extensions: [[$class: 'PruneStaleBranch']]
                     ])
+
+                    if (env.CHANGE_ID) { // If this is a PR build
+                        sh 'git fetch origin "+refs/pull/*:refs/remotes/origin/pr/*"'
+                        sh 'git checkout FETCH_HEAD'
+                    }
                 }
             }
         }
@@ -35,8 +40,7 @@ pipeline {
         stage('Run Danger Checks') {
             steps {
                 script {
-                    if (env.CHANGE_ID) {  // Ensure this is a PR build
-                        sh 'git fetch origin "+refs/pull/*:refs/remotes/origin/pr/*"'
+                    if (env.CHANGE_ID) { // Ensure this is a PR build
                         sh "danger --dangerfile=Dangerfile pr https://github.com/ajMobileConsulting/BankMapper/pull/${CHANGE_ID}"
                     } else {
                         echo "Skipping Danger since this is not a pull request."
