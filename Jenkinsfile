@@ -30,9 +30,9 @@ pipeline {
         stage('Run Danger Checks') {
             steps {
                 script {
-                    def pr_url = sh(script: "git ls-remote origin 'refs/pull/*/head' | grep ${BRANCH_NAME} | awk '{print \$2}' | cut -d'/' -f3", returnStdout: true).trim()
-                    if (pr_url) {
-                        sh "danger --dangerfile=Dangerfile pr https://github.com/ajMobileConsulting/BankMapper/pull/${pr_url}"
+                    def pr_number = sh(script: "git branch --contains HEAD | grep -o '[0-9]*' || echo ''", returnStdout: true).trim()
+                    if (pr_number) {
+                        sh "danger --dangerfile=Dangerfile pr https://github.com/ajMobileConsulting/BankMapper/pull/${pr_number}"
                     } else {
                         error "No pull request found for this branch"
                     }
