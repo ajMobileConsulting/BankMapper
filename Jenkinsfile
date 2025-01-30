@@ -41,15 +41,27 @@ pipeline {
         stage('Run Danger Checks') {
     steps {
         script {
-            if (env.CHANGE_ID) { // Only run Danger if this is a PR
-                sh "danger --dangerfile=Dangerfile pr"
+            def prNumber = env.CHANGE_ID
+
+            if (!prNumber) {
+                // Extract PR number from branch name if CHANGE_ID is not set
+                def branchName = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                def match = branchName =~ /PR-(\d+)-merge/
+                if (match) {
+                    prNumber = match[0][1]
+                    echo "Extracted PR number: ${prNumber}"
+                }
+            }
+
+            if (prNumber) {
+                sh "danger --dangerfile=Dangerfile pr https://github.com/ajMobileConsulting/BankMapper/pull/${prNumber}"
             } else {
-                echo "Skipping Danger since this is not a pull request."
+                echo "Skipping Danger since no PR number could be detected."
             }
         }
     }
 }
-        
+
         stage('Debug PR Detection') {
     steps {
         script {
