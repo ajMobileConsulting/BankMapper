@@ -38,13 +38,13 @@ pipeline {
             }
         }
 
-        stage('Run Danger Checks') {
+ stage('Run Danger Checks') {
     steps {
         script {
             def prNumber = env.CHANGE_ID
 
             if (!prNumber) {
-                // Extract PR number from branch name if CHANGE_ID is not set
+                // Extract PR number if CHANGE_ID is not set
                 def branchName = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
                 def match = branchName =~ /PR-(\d+)-head/
                 if (match) {
@@ -54,8 +54,12 @@ pipeline {
             }
 
             if (prNumber) {
-                withCredentials([string(credentialsId: 'GitHub-Secret-Text', variable: 'DANGER_GITHUB_API_TOKEN')]) {
-                    sh "export DANGER_GITHUB_API_TOKEN=${DANGER_GITHUB_API_TOKEN} && danger --dangerfile=Dangerfile pr https://github.com/ajMobileConsulting/BankMapper/pull/${prNumber}"
+                withCredentials([string(credentialsId: 'GitHub-Secret-Token', variable: 'DANGER_GITHUB_API_TOKEN')]) {
+                    withEnv(["DANGER_GITHUB_API_TOKEN=${env.DANGER_GITHUB_API_TOKEN}"]) {
+                        sh '''
+                        danger --dangerfile=Dangerfile pr https://github.com/ajMobileConsulting/BankMapper/pull/'${prNumber}'
+                        '''
+                    }
                 }
             } else {
                 echo "Skipping Danger since no PR number could be detected."
